@@ -1,5 +1,5 @@
 // ลิงก์เว็บแอป Apps Script (ลิงก์ที่ลงท้ายด้วย /exec) วางระหว่างเครื่องหมายคำพูด
-window.LEAVE_API_URL = "https://script.google.com/macros/s/AKfycbz70ZQu82yUXBkx9_Fj3JG7G1m5uKeP3uPG_l-a2OvMEWn90ELg0vQcr7xcDiW7zgczew/exec";
+window.LEAVE_API_URL = "https://script.google.com/macros/s/AKfycbwZAWWR95UGyTxLXP4THb5b7eeysym3ln6Ic01x9zgHvX2gL0xe406YlBC3By6SecFy/exec"; // อบต.หนองปลาสะวาย
 
 // ---- ไม่ต้องแก้ด้านล่าง: ทำให้หน้าเว็บบน GitHub Pages เรียกคำสั่งใน Apps Script ผ่านลิงก์ /exec ----
 (function () {
