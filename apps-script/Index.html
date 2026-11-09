@@ -366,7 +366,8 @@ const fyRange = fy => [`${fy-544}-10-01`, `${fy-543}-09-30`];
 const todayIso = () => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`; };
 const fmtN = n => (Math.round(n*10)/10).toLocaleString("th-TH", {maximumFractionDigits:1});
 const initial = n => { const t=String(n||"").replace(/^(นางสาว|นาย|นาง|น\.ส\.|ดร\.|ว่าที่ ?ร\.?ต\.?)\s*/,"").trim(); const m=t.match(/[ก-ฮA-Za-z]/); return m?m[0]:"•"; };
-const ORG = [
+// รายการตั้งต้น ใช้เมื่อชีตไม่มีแท็บ "กลุ่มงาน" (แต่ละหน่วยงานกำหนดเองได้ในแท็บนั้น)
+const ORG_DEFAULT = [
   // names match the live staff sheet (บุคลากร) so filters don't split one group into two
   {g:"กลุ่มงานยุทธศาสตร์และแผนงาน", s:["งานพัฒนายุทธศาสตร์","งาน Digital Health & Data"]},
   {g:"กลุ่มงานบริหารทรัพยากรบุคคล", s:[]},
@@ -374,6 +375,7 @@ const ORG = [
   {g:"กลุ่มงานบริหารการเงินการคลัง", s:[]},
   {g:"กลุ่มงานอำนวยการ", s:["งานบริหารและระบบสารบรรณ","งานการเงินและบัญชี","งานกฎหมายและเสริมสร้างวินัยฯ","งานพัสดุ"]},
 ];
+let ORG = ORG_DEFAULT;
 const sectionsOf = g => (ORG.find(o=>o.g===g)||{s:[]}).s;
 const groupOptions = sel => { const names=ORG.map(o=>o.g); const extra = sel && !names.includes(sel) ? [sel] : [];
   return [...names, ...extra].map(g=>`<option value="${esc(g)}" ${sel===g?"selected":""}>${esc(g)}${extra.includes(g)?" (ข้อมูลเดิม)":""}</option>`).join(""); };
@@ -517,6 +519,7 @@ function gas(fn, args){
 function applyData(d){
   S.me = d.me; S.isHR = !!d.isHR;
   S.config = {...DEFAULT_CONFIG, ...d.config, types: Object.keys(d.config.types||{}).length ? d.config.types : DEFAULT_CONFIG.types};
+  ORG = (d.config.org && d.config.org.length) ? d.config.org : ORG_DEFAULT;
   const m = new Map();
   for(const st of d.staff) m.set(st.id, {...st, leaves:[], cancelled:[], carry:{}, carryK:{sick:{}, personal:{}}});
   // รายการที่ยกเลิกแล้วแยกไว้ใน p.cancelled: แสดงในประวัติ แต่ไม่นับเป็นวันลาที่ใช้ไป

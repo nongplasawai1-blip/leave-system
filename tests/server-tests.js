@@ -335,6 +335,15 @@ window.runServerTests = function () {
     B.resetPassword(T, pr[0]);
     ok('default pw: HR reset without ID → 123456', !!B.login('ณัฐวุฒิ ขยันขาย', '123456').token);
     ok('default pw: reset rejects bad ID', throws(() => B.resetPassword(T, pr[0], '1234567890123'), /ไม่ถูกต้อง/));
+    // แท็บ กลุ่มงาน (ไม่บังคับ)
+    ok('org: no tab → empty list', Array.isArray(B.bootstrap(T).data.config.org) && B.bootstrap(T).data.config.org.length === 0);
+    const og = n.ss.insertSheet('กลุ่มงาน');
+    og.appendRow(['กลุ่มงาน', 'งาน (คั่นด้วย ,)']);
+    og.appendRow(['สำนักปลัด', 'งานบริหารทั่วไป, งานการเจ้าหน้าที่']);
+    og.appendRow(['กองคลัง', '']);
+    og.appendRow(['', 'แถวว่าง']);
+    const org = B.bootstrap(T).data.config.org;
+    ok('org: read from tab', org.length === 2 && org[0].g === 'สำนักปลัด' && org[0].s.join('|') === 'งานบริหารทั่วไป|งานการเจ้าหน้าที่' && org[1].s.length === 0, org);
   } catch (e) { out.push('CRASH5 ' + e.stack); }
   return out;
 };

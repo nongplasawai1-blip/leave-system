@@ -10,7 +10,8 @@ var SH = {
   CARRY: 'ยอดยกมา',
   TYPES: 'สิทธิ์การลา',
   HOLIDAYS: 'วันหยุด',
-  SETTINGS: 'ตั้งค่า'
+  SETTINGS: 'ตั้งค่า',
+  ORG: 'กลุ่มงาน' // ไม่บังคับ: รายการกลุ่มงาน/งานของหน่วยงาน
 };
 var STAFF_HEAD = ['id', 'ชื่อ-สกุล', 'ตำแหน่ง', 'ระดับ', 'กลุ่มงาน', 'งาน', 'ประเภทบุคลากร', 'บทบาท',
   'เลขบัตรประชาชน (กรอกชั่วคราว)', 'salt', 'hash', 'ควรเปลี่ยนรหัสผ่าน', 'เข้าใช้ล่าสุด'];
@@ -629,7 +630,20 @@ function buildData_(s) {
     carry = carry.filter(function (c) { return c.staffId === me.id; });
   }
   return { me: pub(me), isHR: isHR, staff: staff.map(pub), leaves: leaves, carry: carry,
-    config: { types: types, holidays: holidays, startFY: Number(getSetting_('startFY')) || 2570 } };
+    config: { types: types, holidays: holidays, startFY: Number(getSetting_('startFY')) || 2570, org: orgRows_() } };
+}
+
+// แท็บ "กลุ่มงาน" (ไม่บังคับ): คอลัมน์ A = กลุ่มงาน, B = งานในกลุ่ม คั่นด้วยจุลภาค
+// ไม่มีแท็บหรือแท็บว่าง = หน้าเว็บใช้รายการกลุ่มงานตั้งต้นในโค้ด
+function orgRows_() {
+  var sh = SpreadsheetApp.getActive().getSheetByName(SH.ORG);
+  if (!sh || sh.getLastRow() < 2) return [];
+  return sh.getRange(2, 1, sh.getLastRow() - 1, 2).getValues()
+    .map(function (x) {
+      return { g: String(x[0] || '').trim(),
+        s: String(x[1] || '').split(/[,\n]/).map(function (t) { return t.trim(); }).filter(String) };
+    })
+    .filter(function (o) { return o.g; });
 }
 
 // ---------------------------------------------------------------- ตัวช่วย
